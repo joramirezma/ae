@@ -206,6 +206,7 @@ const Dashboard = () => {
                         <TaskCard
                           key={task.id}
                           task={task}
+                          projectStatus={project.status}
                           onComplete={() => handleCompleteTask(task.id, project.id)}
                           onDelete={() => handleDeleteTask(task.id, project.id)}
                         />

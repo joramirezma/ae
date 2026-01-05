@@ -1,5 +1,7 @@
 package com.riwi.assesment.application.service;
 
+import java.util.UUID;
+
 import com.riwi.assesment.domain.exception.ProjectNotFoundException;
 import com.riwi.assesment.domain.exception.TaskCannotBeCompletedException;
 import com.riwi.assesment.domain.exception.TaskNotFoundException;
@@ -12,8 +14,6 @@ import com.riwi.assesment.domain.port.out.CurrentUserPort;
 import com.riwi.assesment.domain.port.out.NotificationPort;
 import com.riwi.assesment.domain.port.out.ProjectRepositoryPort;
 import com.riwi.assesment.domain.port.out.TaskRepositoryPort;
-
-import java.util.UUID;
 
 /**
  * Service that implements the CompleteTaskUseCase.

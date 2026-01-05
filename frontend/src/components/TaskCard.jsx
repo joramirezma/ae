@@ -1,7 +1,8 @@
 import './TaskCard.css';
 
-const TaskCard = ({ task, onComplete, onDelete }) => {
+const TaskCard = ({ task, onComplete, onDelete, projectStatus }) => {
   const isCompleted = task.completed;
+  const canComplete = projectStatus === 'ACTIVE' && !isCompleted;
 
   return (
     <div className={`task-card ${isCompleted ? 'completed' : ''}`}>
@@ -9,10 +10,14 @@ const TaskCard = ({ task, onComplete, onDelete }) => {
         <div className="task-checkbox">
           {isCompleted ? (
             <span className="check-icon">✓</span>
-          ) : (
-            <button onClick={onComplete} className="btn-complete">
+          ) : canComplete ? (
+            <button onClick={onComplete} className="btn-complete" title="Complete task">
               ○
             </button>
+          ) : (
+            <span className="btn-complete disabled" title="Activate project first to complete tasks">
+              ○
+            </span>
           )}
         </div>
         <div className="task-info">
@@ -23,6 +28,9 @@ const TaskCard = ({ task, onComplete, onDelete }) => {
         </button>
       </div>
       {isCompleted && <span className="completed-badge">✓ Completed</span>}
+      {!isCompleted && projectStatus === 'DRAFT' && (
+        <span className="draft-badge">⏸ Activate project to complete</span>
+      )}
     </div>
   );
 };
