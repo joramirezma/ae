@@ -1,9 +1,10 @@
 package com.riwi.assesment.presentation.dto;
 
-import com.riwi.assesment.domain.model.Project;
-import io.swagger.v3.oas.annotations.media.Schema;
-
 import java.util.UUID;
+
+import com.riwi.assesment.domain.model.Project;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * DTO for project response.

@@ -1,9 +1,10 @@
 package com.riwi.assesment.presentation.dto;
 
-import com.riwi.assesment.domain.model.Task;
-import io.swagger.v3.oas.annotations.media.Schema;
-
 import java.util.UUID;
+
+import com.riwi.assesment.domain.model.Task;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * DTO for task response.
