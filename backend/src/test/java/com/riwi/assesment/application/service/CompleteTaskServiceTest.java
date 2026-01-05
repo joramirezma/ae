@@ -302,7 +302,7 @@ class CompleteTaskServiceTest {
         );
 
         assertNotNull(exception);
-        assertTrue(exception.getMessage().contains("ACTIVE"));
+        assertTrue(exception.getMessage().contains("ACTIVE") || exception.getMessage().contains("not active"));
 
         // Verify that save was never called
         verify(taskRepository, never()).save(any(Task.class));

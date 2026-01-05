@@ -57,21 +57,21 @@ public class ActivateProjectService implements ActivateProjectUseCase {
             throw new UnauthorizedAccessException(currentUserId, projectId);
         }
 
-        // Check if project can be activated (must be in DRAFT status)
-        if (!project.canBeActivated()) {
-            throw new ProjectCannotBeActivatedException(
-                    "Project is not in DRAFT status. Current status: " + project.getStatus());
-        }
-
-        // Check if project has at least one active (not completed) task
+        // Check if project has at least one active task
         boolean hasActiveTasks = taskRepository.existsByProjectIdAndCompletedFalseAndDeletedFalse(projectId);
-        if (!hasActiveTasks) {
+
+        // Check if project can be activated (domain validates status and active tasks requirement)
+        if (!project.canBeActivated(hasActiveTasks)) {
             throw new ProjectCannotBeActivatedException(
-                    "Project must have at least one active (not completed) task to be activated");
+                    "Project cannot be activated. It must be in DRAFT status and have at least one active task");
         }
 
-        // Activate the project
-        project.activate();
+        // Activate the project (domain logic validates constraints)
+        try {
+            project.activate(hasActiveTasks);
+        } catch (IllegalStateException e) {
+            throw new ProjectCannotBeActivatedException(e.getMessage());
+        }
 
         // Persist the updated project
         Project savedProject = projectRepository.save(project);

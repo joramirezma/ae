@@ -37,23 +37,29 @@ public class Task {
 
     /**
      * Marks the task as completed.
-     * @throws IllegalStateException if the task is already completed or deleted
+     * @param project The project this task belongs to
+     * @throws IllegalStateException if the task is already completed, deleted, or project is not active
      */
-    public void complete() {
+    public void complete(Project project) {
         if (this.deleted) {
             throw new IllegalStateException("Cannot complete a deleted task");
         }
         if (this.completed) {
             throw new IllegalStateException("Task is already completed");
         }
+        if (!project.isActive()) {
+            throw new IllegalStateException(
+                "Tasks can only be completed when the project is ACTIVE. Current project status: " + project.getStatus());
+        }
         this.completed = true;
     }
 
     /**
      * Checks if the task can be completed.
+     * @param project The project this task belongs to
      */
-    public boolean canBeCompleted() {
-        return !this.completed && !this.deleted;
+    public boolean canBeCompleted(Project project) {
+        return !this.completed && !this.deleted && project.isActive();
     }
 
     /**

@@ -44,12 +44,26 @@ public class Project {
     }
 
     /**
+     * Checks if the project can be activated with the given number of active tasks.
+     * A project can only be activated if it is in DRAFT status and has at least one active task.
+     * 
+     * @param hasActiveTasks whether the project has at least one active (not completed) task
+     */
+    public boolean canBeActivated(boolean hasActiveTasks) {
+        return canBeActivated() && hasActiveTasks;
+    }
+
+    /**
      * Activates the project by changing its status to ACTIVE.
+     * @param hasActiveTasks whether the project has at least one active (not completed) task
      * @throws IllegalStateException if the project cannot be activated
      */
-    public void activate() {
+    public void activate(boolean hasActiveTasks) {
         if (!canBeActivated()) {
             throw new IllegalStateException("Project cannot be activated. Current status: " + this.status);
+        }
+        if (!hasActiveTasks) {
+            throw new IllegalStateException("Project must have at least one active (not completed) task to be activated");
         }
         this.status = ProjectStatus.ACTIVE;
     }

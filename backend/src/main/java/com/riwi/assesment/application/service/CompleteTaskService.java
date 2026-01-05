@@ -63,25 +63,23 @@ public class CompleteTaskService implements CompleteTaskUseCase {
             throw new ProjectNotFoundException(task.getProjectId());
         }
 
-        // Check if project is active - tasks can only be completed in active projects
-        if (!project.isActive()) {
-            throw new TaskCannotBeCompletedException(
-                    "Tasks can only be completed when the project is ACTIVE. Current project status: " + project.getStatus());
-        }
-
         // Validate ownership through the project
         if (!project.isOwnedBy(currentUserId)) {
             throw new UnauthorizedAccessException(currentUserId, task.getProjectId());
         }
 
-        // Check if task can be completed
-        if (!task.canBeCompleted()) {
+        // Check if task can be completed (includes project status validation)
+        if (!task.canBeCompleted(project)) {
             throw new TaskCannotBeCompletedException(
-                    "Task is already completed or has been deleted");
+                    "Task cannot be completed. It may be already completed, deleted, or the project is not active");
         }
 
-        // Complete the task
-        task.complete();
+        // Complete the task (domain logic validates project is active)
+        try {
+            task.complete(project);
+        } catch (IllegalStateException e) {
+            throw new TaskCannotBeCompletedException(e.getMessage());
+        }
 
         // Persist the updated task
         Task savedTask = taskRepository.save(task);

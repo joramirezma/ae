@@ -205,7 +205,7 @@ class ActivateProjectServiceTest {
                 () -> activateProjectService.execute(command)
         );
 
-        assertTrue(exception.getMessage().contains("not in DRAFT status"));
+        assertTrue(exception.getMessage().contains("DRAFT") || exception.getMessage().contains("cannot be activated"));
         verify(projectRepository, never()).save(any(Project.class));
     }
 
