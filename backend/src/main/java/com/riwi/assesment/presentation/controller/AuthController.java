@@ -1,9 +1,9 @@
-package com.riwi.assesment.infrastructure.adapter.in.rest;
+package com.riwi.assesment.presentation.controller;
 
 import com.riwi.assesment.domain.model.User;
-import com.riwi.assesment.infrastructure.adapter.in.rest.dto.AuthResponse;
-import com.riwi.assesment.infrastructure.adapter.in.rest.dto.LoginRequest;
-import com.riwi.assesment.infrastructure.adapter.in.rest.dto.RegisterRequest;
+import com.riwi.assesment.presentation.dto.AuthResponse;
+import com.riwi.assesment.presentation.dto.LoginRequest;
+import com.riwi.assesment.presentation.dto.RegisterRequest;
 import com.riwi.assesment.infrastructure.adapter.out.persistence.entity.UserEntity;
 import com.riwi.assesment.infrastructure.adapter.out.persistence.mapper.UserMapper;
 import com.riwi.assesment.infrastructure.adapter.out.persistence.repository.JpaUserRepository;

@@ -1,15 +1,16 @@
 package com.riwi.assesment.infrastructure.adapter.out.persistence;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.springframework.stereotype.Component;
+
 import com.riwi.assesment.domain.model.Task;
 import com.riwi.assesment.domain.port.out.TaskRepositoryPort;
 import com.riwi.assesment.infrastructure.adapter.out.persistence.entity.TaskEntity;
 import com.riwi.assesment.infrastructure.adapter.out.persistence.mapper.TaskMapper;
 import com.riwi.assesment.infrastructure.adapter.out.persistence.repository.JpaTaskRepository;
-import org.springframework.stereotype.Component;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 /**
  * Persistence adapter implementing TaskRepositoryPort.

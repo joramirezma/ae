@@ -1,8 +1,8 @@
-package com.riwi.assesment.infrastructure.adapter.in.rest;
+package com.riwi.assesment.presentation.controller;
 
 import com.riwi.assesment.domain.model.Task;
 import com.riwi.assesment.domain.port.in.CompleteTaskUseCase;
-import com.riwi.assesment.infrastructure.adapter.in.rest.dto.TaskResponse;
+import com.riwi.assesment.presentation.dto.TaskResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;

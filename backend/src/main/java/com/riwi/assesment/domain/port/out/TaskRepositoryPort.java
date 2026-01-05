@@ -1,10 +1,10 @@
 package com.riwi.assesment.domain.port.out;
 
-import com.riwi.assesment.domain.model.Task;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import com.riwi.assesment.domain.model.Task;
 
 /**
  * Output port for Task persistence operations.

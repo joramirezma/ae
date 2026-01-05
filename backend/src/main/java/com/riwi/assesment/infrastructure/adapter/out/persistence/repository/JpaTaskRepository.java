@@ -1,11 +1,12 @@
 package com.riwi.assesment.infrastructure.adapter.out.persistence.repository;
 
-import com.riwi.assesment.infrastructure.adapter.out.persistence.entity.TaskEntity;
+import java.util.List;
+import java.util.UUID;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.UUID;
+import com.riwi.assesment.infrastructure.adapter.out.persistence.entity.TaskEntity;
 
 /**
  * Spring Data JPA Repository for TaskEntity.

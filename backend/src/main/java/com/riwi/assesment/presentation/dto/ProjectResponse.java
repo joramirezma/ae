@@ -1,4 +1,4 @@
-package com.riwi.assesment.infrastructure.adapter.in.rest.dto;
+package com.riwi.assesment.presentation.dto;
 
 import com.riwi.assesment.domain.model.Project;
 

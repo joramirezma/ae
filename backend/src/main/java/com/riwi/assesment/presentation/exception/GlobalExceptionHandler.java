@@ -1,7 +1,7 @@
-package com.riwi.assesment.infrastructure.adapter.in.rest;
+package com.riwi.assesment.presentation.exception;
 
 import com.riwi.assesment.domain.exception.*;
-import com.riwi.assesment.infrastructure.adapter.in.rest.dto.ErrorResponse;
+import com.riwi.assesment.presentation.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
