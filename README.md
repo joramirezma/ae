@@ -57,17 +57,13 @@ cd backend
 
 ## 🔐 Test Credentials
 
-### Administrator User
-```
-Username: admin
-Password: Admin123!
-```
+### Pre-seeded Users (from database migrations)
 
-### Regular User
-```
-Username: user
-Password: User123!
-```
+| Username | Password | Email |
+|----------|----------|-------|
+| `admin` | `password123` | admin@example.com |
+| `johndoe` | `password123` | john@example.com |
+| `janedoe` | `password123` | jane@example.com |
 
 ### Database
 ```
@@ -80,18 +76,18 @@ Password: postgres
 
 ### API Authentication
 
-1. **Register user:**
+1. **Login with pre-seeded user:**
+```bash
+curl -X POST http://localhost:8080/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"password123"}'
+```
+
+2. **Register a new user:**
 ```bash
 curl -X POST http://localhost:8080/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{"username":"testuser","password":"Test123!","name":"Test User","email":"test@example.com"}'
-```
-
-2. **Login:**
-```bash
-curl -X POST http://localhost:8080/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"username":"testuser","password":"Test123!"}'
 ```
 
 3. **Use token in requests:**
