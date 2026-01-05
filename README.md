@@ -1,311 +1,270 @@
-# 🚀 Project & Task Management System
+# Sistema de Gestión de Proyectos y Tareas
 
-A full-stack application for managing projects and tasks, built with **Clean Architecture** and **Hexagonal Architecture** patterns.
+API REST para gestión de proyectos y tareas con arquitectura hexagonal, autenticación JWT y frontend React.
 
-## 📋 Table of Contents
+## 🚀 Pasos para Ejecutar la Aplicación
 
-- [Technologies](#-technologies)
-- [Architecture](#-architecture)
-- [Getting Started](#-getting-started)
-- [API Endpoints](#-api-endpoints)
-- [Running Tests](#-running-tests)
-- [Docker Deployment](#-docker-deployment)
-- [Technical Decisions](#-technical-decisions)
-- [Project Structure](#-project-structure)
+### Requisitos Previos
+- Docker y Docker Compose instalados
+- Puertos disponibles: 5432, 8080, 3000
 
-## 🛠 Technologies
-
-### Backend
-- **Java 17** - Programming language
-- **Spring Boot 3.5.9** - Application framework
-- **Spring Security** - Authentication & Authorization
-- **Spring Data JPA** - Data persistence
-- **PostgreSQL** - Database
-- **JWT (jjwt 0.12.6)** - Token-based authentication
-- **Springdoc OpenAPI 2.7.0** - API documentation (Swagger)
-- **JUnit 5 + Mockito** - Unit testing
-
-### Frontend
-- **React 19** - UI library
-- **Vite** - Build tool
-- **React Router DOM** - Client-side routing
-- **Native Fetch API** - HTTP requests
-
-### DevOps
-- **Docker** - Containerization
-- **Docker Compose** - Multi-container orchestration
-
-## 🏗 Architecture
-
-This project follows **Clean Architecture** and **Hexagonal Architecture** (Ports & Adapters) patterns:
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    INFRASTRUCTURE                            │
-│  ┌─────────────┐  ┌──────────────┐  ┌───────────────────┐   │
-│  │ Controllers │  │ JPA Entities │  │ Security Config   │   │
-│  │   (REST)    │  │ Repositories │  │ JWT Provider      │   │
-│  └──────┬──────┘  └──────┬───────┘  └───────────────────┘   │
-│         │                │                                   │
-├─────────┼────────────────┼───────────────────────────────────┤
-│         │   APPLICATION  │                                   │
-│         │  ┌─────────────▼──────────────┐                   │
-│         │  │        Use Cases           │                   │
-│         │  │  (CreateProject, etc.)     │                   │
-│         │  └─────────────┬──────────────┘                   │
-│         │                │                                   │
-├─────────┼────────────────┼───────────────────────────────────┤
-│         │     DOMAIN     │                                   │
-│         │  ┌─────────────▼──────────────┐                   │
-│         └──►   Entities & Ports         │                   │
-│            │  (User, Project, Task)     │                   │
-│            │  (Input/Output Ports)      │                   │
-│            └────────────────────────────┘                   │
-└─────────────────────────────────────────────────────────────┘
-```
-
-### Layer Responsibilities
-
-| Layer | Responsibility |
-|-------|----------------|
-| **Domain** | Business entities, ports (interfaces), domain exceptions |
-| **Application** | Use case implementations, business logic orchestration |
-| **Infrastructure** | External adapters (DB, REST, Security), framework configs |
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- Java 17+
-- Node.js 18+
-- PostgreSQL 15+ (or Docker)
-- Maven 3.8+
-
-### Option 1: Docker Compose (Recommended)
+### Ejecución con Docker Compose (Recomendado)
 
 ```bash
-# Clone the repository
-git clone https://github.com/joramirezma/ae.git
-cd ae
+# Clonar el repositorio
+git clone <repository-url>
+cd assesment
 
-# Start all services
+# Iniciar todos los servicios
 docker-compose up -d
 
-# Access the application
-# Frontend: http://localhost:5173
-# Backend API: http://localhost:8080
-# Swagger UI: http://localhost:8080/swagger-ui.html
+# Verificar que los servicios estén corriendo
+docker-compose ps
 ```
 
-### Option 2: Manual Setup
+**Servicios disponibles:**
+| Servicio | URL | Descripción |
+|----------|-----|-------------|
+| Frontend | http://localhost:3000 | Aplicación React |
+| Backend API | http://localhost:8080/api | API REST |
+| Swagger UI | http://localhost:8080/swagger-ui.html | Documentación API |
+| PostgreSQL | localhost:5432 | Base de datos |
 
-#### 1. Start PostgreSQL
-
-```bash
-# Using Docker
-docker run -d \
-  --name postgres-db \
-  -e POSTGRES_DB=assesment_db \
-  -e POSTGRES_USER=postgres \
-  -e POSTGRES_PASSWORD=postgres \
-  -p 5432:5432 \
-  postgres:15-alpine
-```
-
-#### 2. Start Backend
+### Ejecución Manual (Desarrollo)
 
 ```bash
+# 1. Iniciar base de datos
+docker-compose up -d db
+
+# 2. Backend (en otra terminal)
 cd backend
-
-# Build the project
-./mvnw clean package -DskipTests
-
-# Run the application
 ./mvnw spring-boot:run
-```
 
-#### 3. Start Frontend
-
-```bash
+# 3. Frontend (en otra terminal)
 cd frontend
-
-# Install dependencies
 npm install
-
-# Start development server
 npm run dev
 ```
 
-### Default Credentials
-
-Create a new user through the registration page or API:
-
-```bash
-curl -X POST http://localhost:8080/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"username": "admin", "email": "admin@test.com", "password": "admin123"}'
-```
-
-## 📡 API Endpoints
-
-### Authentication
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/auth/register` | Register new user |
-| POST | `/api/auth/login` | Login and get JWT token |
-
-### Projects
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/api/projects` | List all projects | ✅ |
-| GET | `/api/projects/{id}` | Get project by ID | ✅ |
-| POST | `/api/projects` | Create new project | ✅ |
-| PATCH | `/api/projects/{id}/activate` | Activate project | ✅ |
-
-### Tasks
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/api/tasks` | List all tasks | ✅ |
-| GET | `/api/tasks/project/{projectId}` | Get tasks by project | ✅ |
-| POST | `/api/tasks` | Create new task | ✅ |
-| PATCH | `/api/tasks/{id}/complete` | Mark task as completed | ✅ |
-
-### Swagger Documentation
-
-Access the interactive API documentation at: `http://localhost:8080/swagger-ui.html`
-
-## 🧪 Running Tests
+### Ejecutar Tests
 
 ```bash
 cd backend
-
-# Run all tests
 ./mvnw test
-
-# Run with coverage report
-./mvnw test jacoco:report
 ```
-
-### Test Coverage
-
-The project includes **13 unit tests** covering:
-
-- `ActivateProjectServiceTest` - 6 tests
-- `CompleteTaskServiceTest` - 7 tests
-
-Tests use **JUnit 5** and **Mockito** for mocking dependencies.
-
-## 🐳 Docker Deployment
-
-### Build and Run
-
-```bash
-# Build and start all services
-docker-compose up -d --build
-
-# View logs
-docker-compose logs -f
-
-# Stop services
-docker-compose down
-
-# Stop and remove volumes
-docker-compose down -v
-```
-
-### Environment Variables
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `DB_HOST` | localhost | Database host |
-| `DB_PORT` | 5432 | Database port |
-| `DB_NAME` | assesment_db | Database name |
-| `DB_USERNAME` | postgres | Database user |
-| `DB_PASSWORD` | postgres | Database password |
-| `JWT_SECRET` | (auto-generated) | JWT signing key |
-| `JWT_EXPIRATION` | 86400000 | Token expiration (24h) |
-
-## 💡 Technical Decisions
-
-### 1. Clean Architecture + Hexagonal Pattern
-
-**Why:** Separation of concerns, testability, and flexibility to change infrastructure without affecting business logic.
-
-**Implementation:**
-- Domain layer has no dependencies on frameworks
-- Use cases define input/output ports
-- Infrastructure adapters implement ports
-
-### 2. JWT Stateless Authentication
-
-**Why:** Scalable, no server-side session storage required.
-
-**Implementation:**
-- Token generated on login with 24h expiration
-- Token validated on each request via filter
-- Claims stored in token (userId, username)
-
-### 3. Native Fetch API (No Axios)
-
-**Why:** Reduces bundle size, native browser API, sufficient for this use case.
-
-### 4. PostgreSQL with JPA
-
-**Why:** Robust RDBMS with excellent Spring Data support, automatic schema generation with `ddl-auto: update`.
-
-### 5. Multi-stage Docker Build
-
-**Why:** Smaller final image (~300MB vs ~700MB), security (no build tools in production).
-
-### 6. Project Status Workflow
-
-**Why:** Business rule requiring project activation before task assignment.
-
-**Flow:** `PENDING → ACTIVE` (only active projects can have tasks)
-
-## 📁 Project Structure
-
-```
-assesment/
-├── backend/
-│   ├── src/main/java/com/riwi/assesment/
-│   │   ├── domain/
-│   │   │   ├── model/           # Entities (User, Project, Task)
-│   │   │   ├── exception/       # Domain exceptions
-│   │   │   └── port/
-│   │   │       ├── in/          # Input ports (Use case interfaces)
-│   │   │       └── out/         # Output ports (Repository interfaces)
-│   │   ├── application/
-│   │   │   └── service/         # Use case implementations
-│   │   └── infrastructure/
-│   │       ├── adapter/
-│   │       │   ├── in/rest/     # REST controllers
-│   │       │   └── out/persistence/  # JPA adapters
-│   │       ├── config/          # Spring configurations
-│   │       └── security/        # JWT security components
-│   ├── src/test/java/           # Unit tests
-│   ├── Dockerfile
-│   └── pom.xml
-├── frontend/
-│   ├── src/
-│   │   ├── components/          # React components
-│   │   ├── context/             # Auth context
-│   │   ├── pages/               # Page components
-│   │   └── services/            # API service (fetch)
-│   ├── package.json
-│   └── vite.config.js
-├── docker-compose.yml
-└── README.md
-```
-
-## 📄 License
-
-This project is created for the Riwi Employability Assessment.
 
 ---
 
-**Author:** Jorge Ramirez  
-**Date:** January 2026
+## 🔐 Credenciales de Prueba
+
+### Usuario Administrador
+```
+Email: admin@test.com
+Password: Admin123!
+```
+
+### Usuario Regular
+```
+Email: user@test.com
+Password: User123!
+```
+
+### Base de Datos
+```
+Host: localhost
+Port: 5432
+Database: projectdb
+Username: postgres
+Password: postgres
+```
+
+### Autenticación API
+
+1. **Registrar usuario:**
+```bash
+curl -X POST http://localhost:8080/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","password":"Test123!","name":"Test User"}'
+```
+
+2. **Login:**
+```bash
+curl -X POST http://localhost:8080/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","password":"Test123!"}'
+```
+
+3. **Usar token en requests:**
+```bash
+curl -X GET http://localhost:8080/api/projects \
+  -H "Authorization: Bearer <JWT_TOKEN>"
+```
+
+---
+
+## 🏗️ Decisiones Técnicas
+
+### Arquitectura Hexagonal (Ports & Adapters)
+
+```
+src/main/java/com/riwi/assesment/
+├── domain/                    # Núcleo de negocio (sin dependencias externas)
+│   ├── model/                 # Entidades de dominio (Project, Task, User)
+│   ├── exception/             # Excepciones de dominio
+│   └── port/
+│       ├── in/                # Puertos de entrada (Use Cases)
+│       └── out/               # Puertos de salida (Repositories, Services)
+├── application/
+│   └── service/               # Implementación de casos de uso
+├── infrastructure/
+│   ├── adapter/
+│   │   ├── persistence/       # Adaptadores JPA (Entities, Repositories)
+│   │   ├── security/          # Adaptador JWT
+│   │   └── service/           # Adaptadores de servicios externos
+│   └── config/                # Configuración Spring
+└── presentation/
+    ├── controller/            # REST Controllers
+    └── dto/                   # Request/Response DTOs
+```
+
+**Justificación:** Permite independencia del framework, facilita testing y mantiene el dominio libre de dependencias técnicas.
+
+### Seguridad
+
+- **JWT (JSON Web Tokens):** Autenticación stateless, tokens de 24h de duración
+- **BCrypt:** Hash de contraseñas con salt automático
+- **Spring Security 6:** Configuración con `SecurityFilterChain`
+- **Validación de ownership:** Solo el propietario puede modificar sus proyectos/tareas
+
+### Base de Datos
+
+- **PostgreSQL 15:** Base de datos relacional robusta
+- **Flyway:** Migraciones versionadas (V1-V5)
+- **Soft Delete:** Borrado lógico con campo `deleted` (preserva historial)
+- **Auditoría:** Tabla `audit_logs` para trazabilidad de acciones
+
+### Patrones Implementados
+
+| Patrón | Uso |
+|--------|-----|
+| **Repository** | Abstracción de persistencia |
+| **DTO** | Separación entre capas |
+| **Mapper** | Conversión Entity ↔ Domain ↔ DTO |
+| **Use Case** | Un caso de uso por operación de negocio |
+| **Adapter** | Implementaciones de puertos de salida |
+
+### Stack Tecnológico
+
+| Capa | Tecnología |
+|------|------------|
+| Backend | Java 17, Spring Boot 3.5.9 |
+| Seguridad | Spring Security 6, JWT (jjwt 0.12.6) |
+| Persistencia | Spring Data JPA, PostgreSQL 15, Flyway |
+| Documentación | SpringDoc OpenAPI 2.8.9 (Swagger) |
+| Frontend | React 19, Vite, TailwindCSS |
+| Testing | JUnit 5, Mockito |
+| Contenedores | Docker, Docker Compose |
+
+### Manejo de Errores
+
+- **RFC 7807 (Problem Details):** Respuestas de error estandarizadas
+- **GlobalExceptionHandler:** Manejo centralizado de excepciones
+- **Excepciones de dominio:** Tipadas para cada caso de error
+
+```json
+{
+  "type": "https://api.projectmanager.com/errors/project-not-found",
+  "title": "Project Not Found",
+  "status": 404,
+  "detail": "Project with ID 123 was not found",
+  "instance": "/api/projects/123"
+}
+```
+
+### Testing
+
+- **Unit Tests:** JUnit 5 + Mockito sin cargar Spring Context
+- **Mocking:** Todos los puertos de salida mockeados
+- **Cobertura:** Casos de uso críticos (ActivateProject, CompleteTask)
+
+---
+
+## 📁 Estructura del Proyecto
+
+```
+assesment/
+├── backend/                   # API Spring Boot
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/         # Código fuente
+│   │   │   └── resources/    # Configuración + Migraciones
+│   │   └── test/             # Tests unitarios
+│   ├── pom.xml               # Dependencias Maven
+│   └── Dockerfile
+├── frontend/                  # React + Vite
+│   ├── src/
+│   ├── package.json
+│   └── Dockerfile
+├── docker-compose.yml         # Orquestación de servicios
+└── README.md
+```
+
+---
+
+## 📚 API Endpoints
+
+### Autenticación
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| POST | `/api/auth/register` | Registrar usuario |
+| POST | `/api/auth/login` | Iniciar sesión |
+
+### Proyectos
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | `/api/projects` | Listar proyectos del usuario |
+| POST | `/api/projects` | Crear proyecto |
+| GET | `/api/projects/{id}` | Obtener proyecto |
+| PUT | `/api/projects/{id}` | Actualizar proyecto |
+| DELETE | `/api/projects/{id}` | Eliminar proyecto (soft delete) |
+| POST | `/api/projects/{id}/activate` | Activar proyecto |
+
+### Tareas
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | `/api/projects/{projectId}/tasks` | Listar tareas |
+| POST | `/api/projects/{projectId}/tasks` | Crear tarea |
+| GET | `/api/tasks/{id}` | Obtener tarea |
+| PUT | `/api/tasks/{id}` | Actualizar tarea |
+| DELETE | `/api/tasks/{id}` | Eliminar tarea (soft delete) |
+| POST | `/api/tasks/{id}/complete` | Completar tarea |
+
+---
+
+## 🛠️ Comandos Útiles
+
+```bash
+# Ver logs de todos los servicios
+docker-compose logs -f
+
+# Ver logs de un servicio específico
+docker-compose logs -f backend
+
+# Reiniciar servicios
+docker-compose restart
+
+# Detener servicios
+docker-compose down
+
+# Detener y eliminar volúmenes (reset DB)
+docker-compose down -v
+
+# Reconstruir imágenes
+docker-compose up -d --build
+```
+
+---
+
+## 📄 Licencia
+
+Este proyecto fue desarrollado como parte del assessment de empleabilidad de Riwi.
