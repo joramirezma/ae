@@ -1,0 +1,50 @@
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: assesment-db
+    environment:
+      POSTGRES_DB: assesment_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d assesment_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - assesment-network
+
+  # Spring Boot Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: assesment-backend
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: assesment_db
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      JWT_SECRET: ThisIsAVeryLongSecretKeyForJWTTokenGenerationThatShouldBeAtLeast256BitsLong
+      JWT_EXPIRATION: 86400000
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - assesment-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  assesment-network:
+    driver: bridge

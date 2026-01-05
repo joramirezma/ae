@@ -47,6 +47,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         // Swagger/OpenAPI
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
+                        // Actuator health endpoint
+                        .requestMatchers("/actuator/**").permitAll()
                         // Allow GET requests for reading (optional, can be restricted)
                         .requestMatchers(HttpMethod.GET, "/api/projects/**").authenticated()
                         // All write operations require authentication
