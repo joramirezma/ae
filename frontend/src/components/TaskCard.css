@@ -1,0 +1,124 @@
+.task-card {
+  background: white;
+  border-radius: 10px;
+  padding: 16px 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.task-card:hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.task-card.completed {
+  background: #f9fafb;
+  opacity: 0.8;
+}
+
+.task-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  flex: 1;
+}
+
+.task-checkbox {
+  flex-shrink: 0;
+}
+
+.btn-complete {
+  width: 28px;
+  height: 28px;
+  border: 2px solid #d1d5db;
+  background: white;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  color: #d1d5db;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-complete:hover {
+  border-color: #10b981;
+  color: #10b981;
+  background: #d1fae5;
+}
+
+.check-icon {
+  width: 28px;
+  height: 28px;
+  background: #10b981;
+  border-radius: 50%;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.task-info {
+  flex: 1;
+}
+
+.task-info h4 {
+  margin: 0 0 6px;
+  color: #333;
+  font-size: 1rem;
+}
+
+.task-info h4.completed-text {
+  text-decoration: line-through;
+  color: #9ca3af;
+}
+
+.task-description {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
+.task-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.project-tag {
+  font-size: 0.8rem;
+  color: #6b7280;
+  background: #f3f4f6;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.completed-badge {
+  font-size: 0.75rem;
+  background: #d1fae5;
+  color: #059669;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+@media (max-width: 600px) {
+  .task-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .task-meta {
+    flex-direction: row;
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
