@@ -61,9 +61,9 @@ cd backend
 
 | Username | Password | Email |
 |----------|----------|-------|
-| `admin` | `password123` | admin@example.com |
-| `johndoe` | `password123` | john@example.com |
-| `janedoe` | `password123` | jane@example.com |
+| `admin` | `Test123!` | admin@example.com |
+| `johndoe` | `Test123!` | john@example.com |
+| `janedoe` | `Test123!` | jane@example.com |
 
 ### Database
 ```
@@ -80,14 +80,14 @@ Password: postgres
 ```bash
 curl -X POST http://localhost:8080/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"username":"admin","password":"password123"}'
+  -d '{"username":"admin","password":"Test123!"}'
 ```
 
 2. **Register a new user:**
 ```bash
 curl -X POST http://localhost:8080/api/auth/register \
   -H "Content-Type: application/json" \
-  -d '{"username":"testuser","password":"Test123!","name":"Test User","email":"test@example.com"}'
+  -d '{"username":"myuser","password":"MyPass123!","name":"My User","email":"myuser@example.com"}'
 ```
 
 3. **Use token in requests:**

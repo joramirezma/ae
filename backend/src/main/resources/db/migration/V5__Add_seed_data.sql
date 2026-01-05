@@ -1,11 +1,11 @@
 -- V5__Add_seed_data.sql
 -- Seed data for testing and development
 
--- Insert test users (password is 'password123' encoded with BCrypt)
+-- Insert test users (password is 'Test123!' encoded with BCrypt)
 INSERT INTO users (id, username, email, password) VALUES
-    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'admin', 'admin@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZRGdjGj/n3.rsA1gN1Lx.gFtq9OiC'),
-    ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22', 'johndoe', 'john@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZRGdjGj/n3.rsA1gN1Lx.gFtq9OiC'),
-    ('c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a33', 'janedoe', 'jane@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZRGdjGj/n3.rsA1gN1Lx.gFtq9OiC')
+    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'admin', 'admin@example.com', '$2a$10$LN1WS3L1hQTnGIZBeQtULOLOVr64vtbpoYruBUHaS3GC73.Nzmk4a'),
+    ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22', 'johndoe', 'john@example.com', '$2a$10$LN1WS3L1hQTnGIZBeQtULOLOVr64vtbpoYruBUHaS3GC73.Nzmk4a'),
+    ('c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a33', 'janedoe', 'jane@example.com', '$2a$10$LN1WS3L1hQTnGIZBeQtULOLOVr64vtbpoYruBUHaS3GC73.Nzmk4a')
 ON CONFLICT (id) DO NOTHING;
 
 -- Insert test projects
