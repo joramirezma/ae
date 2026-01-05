@@ -2,6 +2,8 @@
 
 REST API for project and task management with hexagonal architecture, JWT authentication, and React frontend.
 
+🔗 **Repository:** [https://github.com/joramirezma/ae](https://github.com/joramirezma/ae)
+
 ## 🚀 Steps to Run the Application
 
 ### Prerequisites
@@ -12,8 +14,8 @@ REST API for project and task management with hexagonal architecture, JWT authen
 
 ```bash
 # Clone the repository
-git clone <repository-url>
-cd assesment
+git clone https://github.com/joramirezma/ae.git
+cd ae
 
 # Start all services
 docker-compose up -d
