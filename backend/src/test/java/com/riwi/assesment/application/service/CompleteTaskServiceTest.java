@@ -275,4 +275,38 @@ class CompleteTaskServiceTest {
 
         verify(taskRepository, never()).save(any(Task.class));
     }
+
+    @Test
+    @DisplayName("CompleteTask_ProjectInDraft_ShouldFail")
+    void completeTask_ProjectInDraft_ShouldFail() {
+        // Arrange - Project in DRAFT status (not ACTIVE)
+        Project draftProject = Project.builder()
+                .id(projectId)
+                .ownerId(ownerId)
+                .name("Draft Project")
+                .status(ProjectStatus.DRAFT)
+                .deleted(false)
+                .build();
+
+        when(currentUserPort.getCurrentUserId()).thenReturn(ownerId);
+        when(taskRepository.findById(taskId)).thenReturn(Optional.of(incompleteTask));
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(draftProject));
+
+        CompleteTaskUseCase.CompleteTaskCommand command =
+                new CompleteTaskUseCase.CompleteTaskCommand(taskId);
+
+        // Act & Assert - Cannot complete tasks in DRAFT projects
+        TaskCannotBeCompletedException exception = assertThrows(
+                TaskCannotBeCompletedException.class,
+                () -> completeTaskService.execute(command)
+        );
+
+        assertNotNull(exception);
+        assertTrue(exception.getMessage().contains("ACTIVE"));
+
+        // Verify that save was never called
+        verify(taskRepository, never()).save(any(Task.class));
+        verify(auditLogPort, never()).register(anyString(), any(UUID.class));
+        verify(notificationPort, never()).notify(anyString());
+    }
 }
