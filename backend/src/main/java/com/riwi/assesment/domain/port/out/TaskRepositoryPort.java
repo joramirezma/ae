@@ -69,6 +69,13 @@ public interface TaskRepositoryPort {
     boolean existsById(UUID id);
 
     /**
+     * Finds all non-deleted tasks for projects owned by a specific user.
+     * @param ownerId the owner user ID
+     * @return list of tasks from projects owned by the user
+     */
+    List<Task> findAllByProjectOwnerId(UUID ownerId);
+
+    /**
      * Deletes a task by its ID (hard delete).
      * Note: Prefer soft delete using markAsDeleted() method in the entity.
      * @param id the task ID

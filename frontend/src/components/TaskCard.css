@@ -26,6 +26,21 @@
   flex: 1;
 }
 
+.btn-delete-task {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  opacity: 0.4;
+  transition: opacity 0.2s ease;
+  padding: 4px 8px;
+  margin-left: auto;
+}
+
+.btn-delete-task:hover {
+  opacity: 1;
+}
+
 .task-checkbox {
   flex-shrink: 0;
 }

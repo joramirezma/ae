@@ -26,7 +26,20 @@ public class UserPersistenceAdapter implements UserRepositoryPort {
 
     @Override
     public User save(User user) {
-        UserEntity entity = UserMapper.toEntity(user);
+        UserEntity entity;
+        
+        // Check if it's a new entity (not in database) or existing
+        if (user.getId() != null && jpaUserRepository.existsById(user.getId())) {
+            // Update existing entity
+            entity = UserMapper.toEntity(user);
+        } else {
+            // Create new entity without ID (let JPA generate it)
+            entity = new UserEntity();
+            entity.setUsername(user.getUsername());
+            entity.setEmail(user.getEmail());
+            entity.setPassword(user.getPassword());
+        }
+        
         UserEntity savedEntity = jpaUserRepository.save(entity);
         return UserMapper.toDomain(savedEntity);
     }

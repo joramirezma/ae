@@ -10,28 +10,36 @@ import './Dashboard.css';
 const Dashboard = () => {
   const { user, logout } = useAuth();
   const [projects, setProjects] = useState([]);
-  const [tasks, setTasks] = useState([]);
+  const [tasksByProject, setTasksByProject] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showProjectModal, setShowProjectModal] = useState(false);
   const [showTaskModal, setShowTaskModal] = useState(false);
-  const [selectedProjectId, setSelectedProjectId] = useState('all');
+  const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [notification, setNotification] = useState('');
 
   useEffect(() => {
-    loadData();
+    loadProjects();
   }, []);
 
-  const loadData = async () => {
+  const loadProjects = async () => {
     setLoading(true);
     setError('');
     try {
-      const [projectsData, tasksData] = await Promise.all([
-        projectsApi.getAll(),
-        tasksApi.getAll()
-      ]);
+      const projectsData = await projectsApi.getAll();
       setProjects(projectsData || []);
-      setTasks(tasksData || []);
+      
+      // Load tasks for each project
+      const tasksMap = {};
+      for (const project of (projectsData || [])) {
+        try {
+          const projectTasks = await tasksApi.getByProject(project.id);
+          tasksMap[project.id] = projectTasks || [];
+        } catch {
+          tasksMap[project.id] = [];
+        }
+      }
+      setTasksByProject(tasksMap);
     } catch (err) {
       setError(err.message || 'Failed to load data');
     } finally {
@@ -44,10 +52,11 @@ const Dashboard = () => {
     setTimeout(() => setNotification(''), 3000);
   };
 
-  const handleCreateProject = async (name, description) => {
+  const handleCreateProject = async (name) => {
     try {
-      const newProject = await projectsApi.create(name, description);
+      const newProject = await projectsApi.create(name);
       setProjects([...projects, newProject]);
+      setTasksByProject(prev => ({ ...prev, [newProject.id]: [] }));
       setShowProjectModal(false);
       showNotification('Project created successfully!');
     } catch (err) {
@@ -65,10 +74,31 @@ const Dashboard = () => {
     }
   };
 
-  const handleCreateTask = async (title, description, projectId) => {
+  const handleDeleteProject = async (id) => {
+    if (!confirm('Are you sure you want to delete this project? All tasks will be deleted too.')) {
+      return;
+    }
     try {
-      const newTask = await tasksApi.create(title, description, projectId);
-      setTasks([...tasks, newTask]);
+      await projectsApi.delete(id);
+      setProjects(projects.filter(p => p.id !== id));
+      setTasksByProject(prev => {
+        const newState = { ...prev };
+        delete newState[id];
+        return newState;
+      });
+      showNotification('Project deleted successfully!');
+    } catch (err) {
+      showNotification(`Error: ${err.message}`);
+    }
+  };
+
+  const handleCreateTask = async (title, projectId) => {
+    try {
+      const newTask = await tasksApi.create(title, projectId);
+      setTasksByProject(prev => ({
+        ...prev,
+        [projectId]: [...(prev[projectId] || []), newTask]
+      }));
       setShowTaskModal(false);
       showNotification('Task created successfully!');
     } catch (err) {
@@ -76,19 +106,38 @@ const Dashboard = () => {
     }
   };
 
-  const handleCompleteTask = async (id) => {
+  const handleCompleteTask = async (id, projectId) => {
     try {
       const updatedTask = await tasksApi.complete(id);
-      setTasks(tasks.map(t => t.id === id ? updatedTask : t));
+      setTasksByProject(prev => ({
+        ...prev,
+        [projectId]: (prev[projectId] || []).map(t => t.id === id ? updatedTask : t)
+      }));
       showNotification('Task completed!');
     } catch (err) {
       showNotification(`Error: ${err.message}`);
     }
   };
 
-  const filteredTasks = selectedProjectId === 'all' 
-    ? tasks 
-    : tasks.filter(t => t.projectId === selectedProjectId);
+  const handleDeleteTask = async (id, projectId) => {
+    if (!confirm('Are you sure you want to delete this task?')) {
+      return;
+    }
+    try {
+      await tasksApi.delete(id);
+      setTasksByProject(prev => ({
+        ...prev,
+        [projectId]: (prev[projectId] || []).filter(t => t.id !== id)
+      }));
+      showNotification('Task deleted successfully!');
+    } catch (err) {
+      showNotification(`Error: ${err.message}`);
+    }
+  };
+
+  const getTasksForProject = (projectId) => {
+    return tasksByProject[projectId] || [];
+  };
 
   if (loading) {
     return (
@@ -130,60 +179,43 @@ const Dashboard = () => {
               + New Project
             </button>
           </div>
-          <div className="cards-grid">
-            {projects.length === 0 ? (
-              <p className="empty-message">No projects yet. Create your first project!</p>
-            ) : (
-              projects.map(project => (
-                <ProjectCard
-                  key={project.id}
-                  project={project}
-                  onActivate={handleActivateProject}
-                  taskCount={tasks.filter(t => t.projectId === project.id).length}
-                />
-              ))
-            )}
-          </div>
-        </section>
-
-        {/* Tasks Section */}
-        <section className="section">
-          <div className="section-header">
-            <h2>✅ Tasks</h2>
-            <div className="section-actions">
-              <select 
-                value={selectedProjectId} 
-                onChange={(e) => setSelectedProjectId(e.target.value)}
-                className="filter-select"
-              >
-                <option value="all">All Projects</option>
-                {projects.map(p => (
-                  <option key={p.id} value={p.id}>{p.name}</option>
-                ))}
-              </select>
-              <button 
-                onClick={() => setShowTaskModal(true)} 
-                className="btn-add"
-                disabled={projects.filter(p => p.status === 'ACTIVE').length === 0}
-              >
-                + New Task
-              </button>
+          
+          {projects.length === 0 ? (
+            <p className="empty-message">No projects yet. Create your first project!</p>
+          ) : (
+            <div className="projects-list">
+              {projects.map(project => (
+                <div key={project.id} className="project-container">
+                  <ProjectCard
+                    project={project}
+                    onActivate={handleActivateProject}
+                    taskCount={getTasksForProject(project.id).length}
+                    onAddTask={() => {
+                      setSelectedProjectId(project.id);
+                      setShowTaskModal(true);
+                    }}
+                    onDelete={handleDeleteProject}
+                  />
+                  
+                  {/* Tasks for this project */}
+                  <div className="project-tasks">
+                    {getTasksForProject(project.id).length === 0 ? (
+                      <p className="empty-tasks">No tasks in this project</p>
+                    ) : (
+                      getTasksForProject(project.id).map(task => (
+                        <TaskCard
+                          key={task.id}
+                          task={task}
+                          onComplete={() => handleCompleteTask(task.id, project.id)}
+                          onDelete={() => handleDeleteTask(task.id, project.id)}
+                        />
+                      ))
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
-          </div>
-          <div className="tasks-list">
-            {filteredTasks.length === 0 ? (
-              <p className="empty-message">No tasks yet. Create your first task!</p>
-            ) : (
-              filteredTasks.map(task => (
-                <TaskCard
-                  key={task.id}
-                  task={task}
-                  projectName={projects.find(p => p.id === task.projectId)?.name || 'Unknown'}
-                  onComplete={handleCompleteTask}
-                />
-              ))
-            )}
-          </div>
+          )}
         </section>
       </main>
 
@@ -197,9 +229,13 @@ const Dashboard = () => {
 
       {showTaskModal && (
         <CreateTaskModal
-          onClose={() => setShowTaskModal(false)}
+          onClose={() => {
+            setShowTaskModal(false);
+            setSelectedProjectId(null);
+          }}
           onCreate={handleCreateTask}
-          projects={projects.filter(p => p.status === 'ACTIVE')}
+          projects={selectedProjectId ? [projects.find(p => p.id === selectedProjectId)] : projects}
+          preselectedProjectId={selectedProjectId}
         />
       )}
     </div>

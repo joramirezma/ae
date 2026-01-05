@@ -282,6 +282,46 @@
   background: #d1d5db;
 }
 
+/* Project with Tasks Layout */
+.projects-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.project-container {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.project-tasks {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.empty-tasks {
+  color: #9ca3af;
+  font-style: italic;
+  text-align: center;
+  padding: 12px;
+  font-size: 0.9rem;
+}
+
+.project-context {
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  background: #f0f4ff;
+  border-radius: 8px;
+  color: #4f46e5;
+  font-size: 0.9rem;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .dashboard-header {

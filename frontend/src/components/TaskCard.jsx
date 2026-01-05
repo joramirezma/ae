@@ -1,6 +1,6 @@
 import './TaskCard.css';
 
-const TaskCard = ({ task, projectName, onComplete }) => {
+const TaskCard = ({ task, onComplete, onDelete }) => {
   const isCompleted = task.completed;
 
   return (
@@ -10,20 +10,19 @@ const TaskCard = ({ task, projectName, onComplete }) => {
           {isCompleted ? (
             <span className="check-icon">✓</span>
           ) : (
-            <button onClick={() => onComplete(task.id)} className="btn-complete">
+            <button onClick={onComplete} className="btn-complete">
               ○
             </button>
           )}
         </div>
         <div className="task-info">
           <h4 className={isCompleted ? 'completed-text' : ''}>{task.title}</h4>
-          <p className="task-description">{task.description || 'No description'}</p>
         </div>
+        <button onClick={onDelete} className="btn-delete-task" title="Delete task">
+          🗑️
+        </button>
       </div>
-      <div className="task-meta">
-        <span className="project-tag">📁 {projectName}</span>
-        {isCompleted && <span className="completed-badge">Completed</span>}
-      </div>
+      {isCompleted && <span className="completed-badge">✓ Completed</span>}
     </div>
   );
 };

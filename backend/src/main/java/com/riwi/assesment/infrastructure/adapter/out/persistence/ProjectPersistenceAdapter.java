@@ -1,15 +1,16 @@
 package com.riwi.assesment.infrastructure.adapter.out.persistence;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.springframework.stereotype.Component;
+
 import com.riwi.assesment.domain.model.Project;
 import com.riwi.assesment.domain.port.out.ProjectRepositoryPort;
 import com.riwi.assesment.infrastructure.adapter.out.persistence.entity.ProjectEntity;
 import com.riwi.assesment.infrastructure.adapter.out.persistence.mapper.ProjectMapper;
 import com.riwi.assesment.infrastructure.adapter.out.persistence.repository.JpaProjectRepository;
-import org.springframework.stereotype.Component;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 /**
  * Persistence adapter implementing ProjectRepositoryPort.
@@ -26,7 +27,20 @@ public class ProjectPersistenceAdapter implements ProjectRepositoryPort {
 
     @Override
     public Project save(Project project) {
-        ProjectEntity entity = ProjectMapper.toEntity(project);
+        ProjectEntity entity;
+        
+        // Check if it's a new entity or existing
+        if (project.getId() != null && jpaProjectRepository.existsById(project.getId())) {
+            entity = ProjectMapper.toEntity(project);
+        } else {
+            // Create new entity without ID (let JPA generate it)
+            entity = new ProjectEntity();
+            entity.setOwnerId(project.getOwnerId());
+            entity.setName(project.getName());
+            entity.setStatus(ProjectMapper.toEntityStatus(project.getStatus()));
+            entity.setDeleted(project.isDeleted());
+        }
+        
         ProjectEntity savedEntity = jpaProjectRepository.save(entity);
         return ProjectMapper.toDomain(savedEntity);
     }

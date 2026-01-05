@@ -1,4 +1,5 @@
-const API_BASE_URL = 'http://localhost:8080/api';
+// Use relative URL in production (Docker), absolute in development
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 /**
  * Get stored JWT token from localStorage
@@ -114,10 +115,10 @@ export const projectsApi = {
   /**
    * Create a new project
    */
-  create: async (name, description) => {
+  create: async (name) => {
     return fetchApi('/projects', {
       method: 'POST',
-      body: JSON.stringify({ name, description }),
+      body: JSON.stringify({ name }),
     });
   },
 
@@ -129,32 +130,34 @@ export const projectsApi = {
       method: 'PATCH',
     });
   },
+
+  /**
+   * Delete a project (soft delete)
+   */
+  delete: async (id) => {
+    return fetchApi(`/projects/${id}`, {
+      method: 'DELETE',
+    });
+  },
 };
 
 // ==================== TASKS API ====================
 
 export const tasksApi = {
   /**
-   * Get all tasks
-   */
-  getAll: async () => {
-    return fetchApi('/tasks');
-  },
-
-  /**
    * Get tasks by project ID
    */
   getByProject: async (projectId) => {
-    return fetchApi(`/tasks/project/${projectId}`);
+    return fetchApi(`/projects/${projectId}/tasks`);
   },
 
   /**
    * Create a new task
    */
-  create: async (title, description, projectId) => {
+  create: async (title, projectId) => {
     return fetchApi(`/projects/${projectId}/tasks`, {
       method: 'POST',
-      body: JSON.stringify({ title, description }),
+      body: JSON.stringify({ title }),
     });
   },
 
@@ -164,6 +167,15 @@ export const tasksApi = {
   complete: async (id) => {
     return fetchApi(`/tasks/${id}/complete`, {
       method: 'PATCH',
+    });
+  },
+
+  /**
+   * Delete a task (soft delete)
+   */
+  delete: async (id) => {
+    return fetchApi(`/tasks/${id}`, {
+      method: 'DELETE',
     });
   },
 };

@@ -27,7 +27,20 @@ public class TaskPersistenceAdapter implements TaskRepositoryPort {
 
     @Override
     public Task save(Task task) {
-        TaskEntity entity = TaskMapper.toEntity(task);
+        TaskEntity entity;
+        
+        // Check if it's a new entity or existing
+        if (task.getId() != null && jpaTaskRepository.existsById(task.getId())) {
+            entity = TaskMapper.toEntity(task);
+        } else {
+            // Create new entity without ID (let JPA generate it)
+            entity = new TaskEntity();
+            entity.setProjectId(task.getProjectId());
+            entity.setTitle(task.getTitle());
+            entity.setCompleted(task.isCompleted());
+            entity.setDeleted(task.isDeleted());
+        }
+        
         TaskEntity savedEntity = jpaTaskRepository.save(entity);
         return TaskMapper.toDomain(savedEntity);
     }
@@ -72,6 +85,14 @@ public class TaskPersistenceAdapter implements TaskRepositoryPort {
     @Override
     public boolean existsById(UUID id) {
         return jpaTaskRepository.existsById(id);
+    }
+
+    @Override
+    public List<Task> findAllByProjectOwnerId(UUID ownerId) {
+        return jpaTaskRepository.findAllByProjectOwnerId(ownerId)
+                .stream()
+                .map(TaskMapper::toDomain)
+                .toList();
     }
 
     @Override

@@ -65,4 +65,10 @@ public interface JpaTaskRepository extends JpaRepository<TaskEntity, UUID> {
      */
     @Query(value = "SELECT * FROM tasks WHERE id = :id", nativeQuery = true)
     Optional<TaskEntity> findByIdIncludingDeleted(@Param("id") UUID id);
+
+    /**
+     * Find all tasks for projects owned by a specific user.
+     */
+    @Query("SELECT t FROM TaskEntity t JOIN ProjectEntity p ON t.projectId = p.id WHERE p.ownerId = :ownerId")
+    List<TaskEntity> findAllByProjectOwnerId(@Param("ownerId") UUID ownerId);
 }

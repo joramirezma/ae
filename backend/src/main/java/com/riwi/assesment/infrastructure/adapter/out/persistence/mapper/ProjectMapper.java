@@ -40,7 +40,7 @@ public class ProjectMapper {
         );
     }
 
-    private static ProjectStatus toDomainStatus(ProjectStatusEntity entityStatus) {
+    public static ProjectStatus toDomainStatus(ProjectStatusEntity entityStatus) {
         if (entityStatus == null) {
             return ProjectStatus.DRAFT;
         }
@@ -50,7 +50,7 @@ public class ProjectMapper {
         };
     }
 
-    private static ProjectStatusEntity toEntityStatus(ProjectStatus domainStatus) {
+    public static ProjectStatusEntity toEntityStatus(ProjectStatus domainStatus) {
         if (domainStatus == null) {
             return ProjectStatusEntity.DRAFT;
         }

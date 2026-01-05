@@ -2,7 +2,6 @@ import { useState } from 'react';
 
 const CreateProjectModal = ({ onClose, onCreate }) => {
   const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -17,7 +16,7 @@ const CreateProjectModal = ({ onClose, onCreate }) => {
     setError('');
 
     try {
-      await onCreate(name, description);
+      await onCreate(name);
     } catch (err) {
       setError(err.message || 'Failed to create project');
       setLoading(false);
@@ -39,15 +38,6 @@ const CreateProjectModal = ({ onClose, onCreate }) => {
               onChange={(e) => setName(e.target.value)}
               placeholder="Enter project name"
               autoFocus
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="project-description">Description</label>
-            <textarea
-              id="project-description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Enter project description (optional)"
             />
           </div>
           <div className="modal-actions">

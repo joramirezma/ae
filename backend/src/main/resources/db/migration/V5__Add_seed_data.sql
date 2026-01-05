@@ -34,7 +34,7 @@ INSERT INTO tasks (id, project_id, title, completed, deleted) VALUES
 ON CONFLICT (id) DO NOTHING;
 
 -- Insert audit log examples
-INSERT INTO audit_logs (id, action, entity_id, timestamp) VALUES
+INSERT INTO audit_logs (id, action, entity_id, created_at) VALUES
     ('b1eebc99-9c0b-4ef8-bb6d-6bb9bd380b22', 'CREATE_PROJECT', 'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44', NOW() - INTERVAL '7 days'),
     ('c1eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'ACTIVATE_PROJECT', 'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44', NOW() - INTERVAL '6 days'),
     ('d1eebc99-9c0b-4ef8-bb6d-6bb9bd380b44', 'CREATE_TASK', '30eebc99-9c0b-4ef8-bb6d-6bb9bd380a99', NOW() - INTERVAL '5 days'),

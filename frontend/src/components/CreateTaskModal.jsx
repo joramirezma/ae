@@ -1,11 +1,13 @@
 import { useState } from 'react';
 
-const CreateTaskModal = ({ onClose, onCreate, projects }) => {
+const CreateTaskModal = ({ onClose, onCreate, projects, preselectedProjectId }) => {
   const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [projectId, setProjectId] = useState(projects[0]?.id || '');
+  const [projectId, setProjectId] = useState(preselectedProjectId || projects[0]?.id || '');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Find the selected project to display its name
+  const selectedProject = projects.find(p => p.id === projectId);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,7 +24,7 @@ const CreateTaskModal = ({ onClose, onCreate, projects }) => {
     setError('');
 
     try {
-      await onCreate(title, description, projectId);
+      await onCreate(title, projectId);
     } catch (err) {
       setError(err.message || 'Failed to create task');
       setLoading(false);
@@ -33,6 +35,11 @@ const CreateTaskModal = ({ onClose, onCreate, projects }) => {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h3>✅ Create New Task</h3>
+        {selectedProject && (
+          <p className="project-context">
+            Adding task to: <strong>{selectedProject.name}</strong>
+          </p>
+        )}
         <form onSubmit={handleSubmit}>
           {error && <div className="error-message">{error}</div>}
           <div className="form-group">
@@ -46,29 +53,22 @@ const CreateTaskModal = ({ onClose, onCreate, projects }) => {
               autoFocus
             />
           </div>
-          <div className="form-group">
-            <label htmlFor="task-description">Description</label>
-            <textarea
-              id="task-description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Enter task description (optional)"
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="task-project">Project *</label>
-            <select
-              id="task-project"
-              value={projectId}
-              onChange={(e) => setProjectId(e.target.value)}
-            >
-              {projects.map((project) => (
-                <option key={project.id} value={project.id}>
-                  {project.name}
-                </option>
-              ))}
-            </select>
-          </div>
+          {!preselectedProjectId && projects.length > 1 && (
+            <div className="form-group">
+              <label htmlFor="task-project">Project *</label>
+              <select
+                id="task-project"
+                value={projectId}
+                onChange={(e) => setProjectId(e.target.value)}
+              >
+                {projects.map((project) => (
+                  <option key={project.id} value={project.id}>
+                    {project.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
           <div className="modal-actions">
             <button type="button" onClick={onClose} className="btn-secondary">
               Cancel
