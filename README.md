@@ -1,52 +1,52 @@
-# Sistema de Gestión de Proyectos y Tareas
+# Project & Task Management System
 
-API REST para gestión de proyectos y tareas con arquitectura hexagonal, autenticación JWT y frontend React.
+REST API for project and task management with hexagonal architecture, JWT authentication, and React frontend.
 
-## 🚀 Pasos para Ejecutar la Aplicación
+## 🚀 Steps to Run the Application
 
-### Requisitos Previos
-- Docker y Docker Compose instalados
-- Puertos disponibles: 5432, 8080, 3000
+### Prerequisites
+- Docker and Docker Compose installed
+- Available ports: 5432, 8080, 3000
 
-### Ejecución con Docker Compose (Recomendado)
+### Running with Docker Compose (Recommended)
 
 ```bash
-# Clonar el repositorio
+# Clone the repository
 git clone <repository-url>
 cd assesment
 
-# Iniciar todos los servicios
+# Start all services
 docker-compose up -d
 
-# Verificar que los servicios estén corriendo
+# Verify services are running
 docker-compose ps
 ```
 
-**Servicios disponibles:**
-| Servicio | URL | Descripción |
-|----------|-----|-------------|
-| Frontend | http://localhost:3000 | Aplicación React |
-| Backend API | http://localhost:8080/api | API REST |
-| Swagger UI | http://localhost:8080/swagger-ui.html | Documentación API |
-| PostgreSQL | localhost:5432 | Base de datos |
+**Available services:**
+| Service | URL | Description |
+|---------|-----|-------------|
+| Frontend | http://localhost:3000 | React Application |
+| Backend API | http://localhost:8080/api | REST API |
+| Swagger UI | http://localhost:8080/swagger-ui.html | API Documentation |
+| PostgreSQL | localhost:5432 | Database |
 
-### Ejecución Manual (Desarrollo)
+### Manual Execution (Development)
 
 ```bash
-# 1. Iniciar base de datos
+# 1. Start database
 docker-compose up -d db
 
-# 2. Backend (en otra terminal)
+# 2. Backend (in another terminal)
 cd backend
 ./mvnw spring-boot:run
 
-# 3. Frontend (en otra terminal)
+# 3. Frontend (in another terminal)
 cd frontend
 npm install
 npm run dev
 ```
 
-### Ejecutar Tests
+### Running Tests
 
 ```bash
 cd backend
@@ -55,21 +55,21 @@ cd backend
 
 ---
 
-## 🔐 Credenciales de Prueba
+## 🔐 Test Credentials
 
-### Usuario Administrador
+### Administrator User
 ```
 Email: admin@test.com
 Password: Admin123!
 ```
 
-### Usuario Regular
+### Regular User
 ```
 Email: user@test.com
 Password: User123!
 ```
 
-### Base de Datos
+### Database
 ```
 Host: localhost
 Port: 5432
@@ -78,9 +78,9 @@ Username: postgres
 Password: postgres
 ```
 
-### Autenticación API
+### API Authentication
 
-1. **Registrar usuario:**
+1. **Register user:**
 ```bash
 curl -X POST http://localhost:8080/api/auth/register \
   -H "Content-Type: application/json" \
@@ -94,7 +94,7 @@ curl -X POST http://localhost:8080/api/auth/login \
   -d '{"email":"test@example.com","password":"Test123!"}'
 ```
 
-3. **Usar token en requests:**
+3. **Use token in requests:**
 ```bash
 curl -X GET http://localhost:8080/api/projects \
   -H "Authorization: Bearer <JWT_TOKEN>"
@@ -102,92 +102,92 @@ curl -X GET http://localhost:8080/api/projects \
 
 ---
 
-## 🏗️ Decisiones Técnicas
+## 🏗️ Technical Decisions
 
-### Arquitectura Hexagonal (Ports & Adapters) con 4 Capas
+### Hexagonal Architecture (Ports & Adapters) with 4 Layers
 
 ```
 src/main/java/com/riwi/assesment/
 │
-├── domain/                    # 🔵 NÚCLEO - Lógica de negocio pura
-│   ├── model/                 # Entidades de dominio (Project, Task, User)
-│   ├── exception/             # Excepciones de dominio tipadas
+├── domain/                    # 🔵 CORE - Pure business logic
+│   ├── model/                 # Domain entities (Project, Task, User)
+│   ├── exception/             # Typed domain exceptions
 │   └── port/
-│       ├── in/                # Puertos de entrada (Use Cases)
-│       └── out/               # Puertos de salida (Contracts)
+│       ├── in/                # Input ports (Use Cases)
+│       └── out/               # Output ports (Contracts)
 │
-├── application/               # 🟢 APLICACIÓN - Orquestación de casos de uso
-│   └── service/               # Implementación de Use Cases
+├── application/               # 🟢 APPLICATION - Use case orchestration
+│   └── service/               # Use Case implementations
 │
-├── infrastructure/            # 🟠 INFRAESTRUCTURA - Adaptadores técnicos
+├── infrastructure/            # 🟠 INFRASTRUCTURE - Technical adapters
 │   ├── adapter/
 │   │   ├── persistence/       # JPA Entities, Repositories, Mappers
 │   │   ├── security/          # JWT Provider, User Details
 │   │   └── service/           # Audit, Notification adapters
 │   └── config/                # Spring Security, OpenAPI, Beans
 │
-└── presentation/              # 🟣 PRESENTACIÓN - Interfaz HTTP
+└── presentation/              # 🟣 PRESENTATION - HTTP Interface
     ├── controller/            # REST Controllers (@RestController)
     ├── dto/
-    │   ├── request/           # DTOs de entrada (validaciones)
-    │   └── response/          # DTOs de salida (serialización)
+    │   ├── request/           # Input DTOs (validations)
+    │   └── response/          # Output DTOs (serialization)
     └── exception/             # GlobalExceptionHandler, ProblemDetails
 ```
 
-**Flujo de dependencias:**
+**Dependency flow:**
 ```
 Presentation → Application → Domain ← Infrastructure
      ↓              ↓           ↑            ↓
   Controllers    Services    Ports      Adapters
 ```
 
-**Justificación:** 
-- **Domain:** Sin dependencias externas, 100% testeable
-- **Application:** Orquesta casos de uso, implementa puertos de entrada
-- **Infrastructure:** Implementa puertos de salida (BD, JWT, servicios externos)
-- **Presentation:** Maneja HTTP, validación de requests, serialización de responses
+**Justification:** 
+- **Domain:** No external dependencies, 100% testable
+- **Application:** Orchestrates use cases, implements input ports
+- **Infrastructure:** Implements output ports (DB, JWT, external services)
+- **Presentation:** Handles HTTP, request validation, response serialization
 
-### Seguridad
+### Security
 
-- **JWT (JSON Web Tokens):** Autenticación stateless, tokens de 24h de duración
-- **BCrypt:** Hash de contraseñas con salt automático
-- **Spring Security 6:** Configuración con `SecurityFilterChain`
-- **Validación de ownership:** Solo el propietario puede modificar sus proyectos/tareas
+- **JWT (JSON Web Tokens):** Stateless authentication, 24-hour token duration
+- **BCrypt:** Password hashing with automatic salt
+- **Spring Security 6:** Configuration with `SecurityFilterChain`
+- **Ownership validation:** Only the owner can modify their projects/tasks
 
-### Base de Datos
+### Database
 
-- **PostgreSQL 15:** Base de datos relacional robusta
-- **Flyway:** Migraciones versionadas (V1-V5)
-- **Soft Delete:** Borrado lógico con campo `deleted` (preserva historial)
-- **Auditoría:** Tabla `audit_logs` para trazabilidad de acciones
+- **PostgreSQL 15:** Robust relational database
+- **Flyway:** Versioned migrations (V1-V5)
+- **Soft Delete:** Logical deletion with `deleted` field (preserves history)
+- **Auditing:** `audit_logs` table for action traceability
 
-### Patrones Implementados
+### Implemented Patterns
 
-| Patrón | Uso |
-|--------|-----|
-| **Repository** | Abstracción de persistencia |
-| **DTO** | Separación entre capas |
-| **Mapper** | Conversión Entity ↔ Domain ↔ DTO |
-| **Use Case** | Un caso de uso por operación de negocio |
-| **Adapter** | Implementaciones de puertos de salida |
+| Pattern | Usage |
+|---------|-------|
+| **Repository** | Persistence abstraction |
+| **DTO** | Layer separation |
+| **Mapper** | Entity ↔ Domain ↔ DTO conversion |
+| **Use Case** | One use case per business operation |
+| **Adapter** | Output port implementations |
 
-### Stack Tecnológico
+### Technology Stack
 
-| Capa | Tecnología |
-|------|------------|
+| Layer | Technology |
+|-------|------------|
 | Backend | Java 17, Spring Boot 3.5.9 |
-| Seguridad | Spring Security 6, JWT (jjwt 0.12.6) |
-| Persistencia | Spring Data JPA, PostgreSQL 15, Flyway |
-| Documentación | SpringDoc OpenAPI 2.8.9 (Swagger) |
+| Security | Spring Security 6, JWT (jjwt 0.12.6) |
+| Persistence | Spring Data JPA, PostgreSQL 15, Flyway |
+| Documentation | SpringDoc OpenAPI 2.8.9 (Swagger) |
 | Frontend | React 19, Vite, TailwindCSS |
 | Testing | JUnit 5, Mockito |
-| Contenedores | Docker, Docker Compose |
+| Containers | Docker, Docker Compose |
 
-### Manejo de Errores
+### Error Handling
 
-- **RFC 7807 (Problem Details):** Respuestas de error estandarizadas
-- **GlobalExceptionHandler:** Manejo centralizado de excepciones
-- **Excepciones de dominio:** Tipadas para cada caso de error
+- **RFC 7807 (Problem Details):** Standardized error responses
+- **GlobalExceptionHandler:** Centralized exception handling
+- **Domain exceptions:** Typed for each error case
 
 ```json
 {
@@ -201,29 +201,29 @@ Presentation → Application → Domain ← Infrastructure
 
 ### Testing
 
-- **Unit Tests:** JUnit 5 + Mockito sin cargar Spring Context
-- **Mocking:** Todos los puertos de salida mockeados
-- **Cobertura:** Casos de uso críticos (ActivateProject, CompleteTask)
+- **Unit Tests:** JUnit 5 + Mockito without loading Spring Context
+- **Mocking:** All output ports mocked
+- **Coverage:** Critical use cases (ActivateProject, CompleteTask)
 
 ---
 
-## 📁 Estructura del Proyecto
+## 📁 Project Structure
 
 ```
 assesment/
-├── backend/                   # API Spring Boot
+├── backend/                   # Spring Boot API
 │   ├── src/
 │   │   ├── main/
-│   │   │   ├── java/         # Código fuente
-│   │   │   └── resources/    # Configuración + Migraciones
-│   │   └── test/             # Tests unitarios
-│   ├── pom.xml               # Dependencias Maven
+│   │   │   ├── java/         # Source code
+│   │   │   └── resources/    # Configuration + Migrations
+│   │   └── test/             # Unit tests
+│   ├── pom.xml               # Maven dependencies
 │   └── Dockerfile
 ├── frontend/                  # React + Vite
 │   ├── src/
 │   ├── package.json
 │   └── Dockerfile
-├── docker-compose.yml         # Orquestación de servicios
+├── docker-compose.yml         # Service orchestration
 └── README.md
 ```
 
@@ -231,58 +231,59 @@ assesment/
 
 ## 📚 API Endpoints
 
-### Autenticación
-| Método | Endpoint | Descripción |
+### Authentication
+| Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/api/auth/register` | Registrar usuario |
-| POST | `/api/auth/login` | Iniciar sesión |
+| POST | `/api/auth/register` | Register user |
+| POST | `/api/auth/login` | Login |
 
-### Proyectos
-| Método | Endpoint | Descripción |
+### Projects
+| Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/projects` | Listar proyectos del usuario |
-| POST | `/api/projects` | Crear proyecto |
-| GET | `/api/projects/{id}` | Obtener proyecto |
-| PUT | `/api/projects/{id}` | Actualizar proyecto |
-| DELETE | `/api/projects/{id}` | Eliminar proyecto (soft delete) |
-| POST | `/api/projects/{id}/activate` | Activar proyecto |
+| GET | `/api/projects` | List user's projects |
+| POST | `/api/projects` | Create project |
+| GET | `/api/projects/{id}` | Get project |
+| PUT | `/api/projects/{id}` | Update project |
+| DELETE | `/api/projects/{id}` | Delete project (soft delete) |
+| POST | `/api/projects/{id}/activate` | Activate project |
 
-### Tareas
-| Método | Endpoint | Descripción |
+### Tasks
+| Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/projects/{projectId}/tasks` | Listar tareas |
-| POST | `/api/projects/{projectId}/tasks` | Crear tarea |
-| GET | `/api/tasks/{id}` | Obtener tarea |
-| PUT | `/api/tasks/{id}` | Actualizar tarea |
-| DELETE | `/api/tasks/{id}` | Eliminar tarea (soft delete) |
-| POST | `/api/tasks/{id}/complete` | Completar tarea |
+| GET | `/api/projects/{projectId}/tasks` | List tasks |
+| POST | `/api/projects/{projectId}/tasks` | Create task |
+| GET | `/api/tasks/{id}` | Get task |
+| PUT | `/api/tasks/{id}` | Update task |
+| DELETE | `/api/tasks/{id}` | Delete task (soft delete) |
+| POST | `/api/tasks/{id}/complete` | Complete task |
 
 ---
 
-## 🛠️ Comandos Útiles
+## 🛠️ Useful Commands
 
 ```bash
-# Ver logs de todos los servicios
+# View logs for all services
 docker-compose logs -f
 
-# Ver logs de un servicio específico
+# View logs for a specific service
 docker-compose logs -f backend
 
-# Reiniciar servicios
+# Restart services
 docker-compose restart
 
-# Detener servicios
+# Stop services
 docker-compose down
 
-# Detener y eliminar volúmenes (reset DB)
+# Stop and remove volumes (reset DB)
 docker-compose down -v
 
-# Reconstruir imágenes
+# Rebuild images
 docker-compose up -d --build
 ```
 
 ---
 
-## 📄 Licencia
+## 📄 License
 
-Este proyecto fue desarrollado como parte del assessment de empleabilidad de Riwi.
+This project was developed as part of the Riwi employability assessment.
+
