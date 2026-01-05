@@ -59,13 +59,13 @@ cd backend
 
 ### Administrator User
 ```
-Email: admin@test.com
+Username: admin
 Password: Admin123!
 ```
 
 ### Regular User
 ```
-Email: user@test.com
+Username: user
 Password: User123!
 ```
 
@@ -84,14 +84,14 @@ Password: postgres
 ```bash
 curl -X POST http://localhost:8080/api/auth/register \
   -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","password":"Test123!","name":"Test User"}'
+  -d '{"username":"testuser","password":"Test123!","name":"Test User","email":"test@example.com"}'
 ```
 
 2. **Login:**
 ```bash
 curl -X POST http://localhost:8080/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","password":"Test123!"}'
+  -d '{"username":"testuser","password":"Test123!"}'
 ```
 
 3. **Use token in requests:**
