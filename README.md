@@ -104,30 +104,48 @@ curl -X GET http://localhost:8080/api/projects \
 
 ## 🏗️ Decisiones Técnicas
 
-### Arquitectura Hexagonal (Ports & Adapters)
+### Arquitectura Hexagonal (Ports & Adapters) con 4 Capas
 
 ```
 src/main/java/com/riwi/assesment/
-├── domain/                    # Núcleo de negocio (sin dependencias externas)
+│
+├── domain/                    # 🔵 NÚCLEO - Lógica de negocio pura
 │   ├── model/                 # Entidades de dominio (Project, Task, User)
-│   ├── exception/             # Excepciones de dominio
+│   ├── exception/             # Excepciones de dominio tipadas
 │   └── port/
 │       ├── in/                # Puertos de entrada (Use Cases)
-│       └── out/               # Puertos de salida (Repositories, Services)
-├── application/
-│   └── service/               # Implementación de casos de uso
-├── infrastructure/
+│       └── out/               # Puertos de salida (Contracts)
+│
+├── application/               # 🟢 APLICACIÓN - Orquestación de casos de uso
+│   └── service/               # Implementación de Use Cases
+│
+├── infrastructure/            # 🟠 INFRAESTRUCTURA - Adaptadores técnicos
 │   ├── adapter/
-│   │   ├── persistence/       # Adaptadores JPA (Entities, Repositories)
-│   │   ├── security/          # Adaptador JWT
-│   │   └── service/           # Adaptadores de servicios externos
-│   └── config/                # Configuración Spring
-└── presentation/
-    ├── controller/            # REST Controllers
-    └── dto/                   # Request/Response DTOs
+│   │   ├── persistence/       # JPA Entities, Repositories, Mappers
+│   │   ├── security/          # JWT Provider, User Details
+│   │   └── service/           # Audit, Notification adapters
+│   └── config/                # Spring Security, OpenAPI, Beans
+│
+└── presentation/              # 🟣 PRESENTACIÓN - Interfaz HTTP
+    ├── controller/            # REST Controllers (@RestController)
+    ├── dto/
+    │   ├── request/           # DTOs de entrada (validaciones)
+    │   └── response/          # DTOs de salida (serialización)
+    └── exception/             # GlobalExceptionHandler, ProblemDetails
 ```
 
-**Justificación:** Permite independencia del framework, facilita testing y mantiene el dominio libre de dependencias técnicas.
+**Flujo de dependencias:**
+```
+Presentation → Application → Domain ← Infrastructure
+     ↓              ↓           ↑            ↓
+  Controllers    Services    Ports      Adapters
+```
+
+**Justificación:** 
+- **Domain:** Sin dependencias externas, 100% testeable
+- **Application:** Orquesta casos de uso, implementa puertos de entrada
+- **Infrastructure:** Implementa puertos de salida (BD, JWT, servicios externos)
+- **Presentation:** Maneja HTTP, validación de requests, serialización de responses
 
 ### Seguridad
 
