@@ -1,13 +1,7 @@
 package com.riwi.assesment.infrastructure.config;
 
-import com.riwi.assesment.application.service.ActivateProjectService;
-import com.riwi.assesment.application.service.CompleteTaskService;
-import com.riwi.assesment.application.service.CreateProjectService;
-import com.riwi.assesment.application.service.CreateTaskService;
-import com.riwi.assesment.domain.port.in.ActivateProjectUseCase;
-import com.riwi.assesment.domain.port.in.CompleteTaskUseCase;
-import com.riwi.assesment.domain.port.in.CreateProjectUseCase;
-import com.riwi.assesment.domain.port.in.CreateTaskUseCase;
+import com.riwi.assesment.application.service.*;
+import com.riwi.assesment.domain.port.in.*;
 import com.riwi.assesment.domain.port.out.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -78,6 +72,34 @@ public class UseCaseConfig {
                 currentUserPort,
                 auditLogPort,
                 notificationPort
+        );
+    }
+
+    @Bean
+    public RegisterUserUseCase registerUserUseCase(
+            UserRepositoryPort userRepository,
+            PasswordEncoderPort passwordEncoder,
+            TokenProviderPort tokenProvider,
+            AuditLogPort auditLogPort) {
+        return new RegisterUserService(
+                userRepository,
+                passwordEncoder,
+                tokenProvider,
+                auditLogPort
+        );
+    }
+
+    @Bean
+    public LoginUserUseCase loginUserUseCase(
+            UserRepositoryPort userRepository,
+            PasswordEncoderPort passwordEncoder,
+            TokenProviderPort tokenProvider,
+            AuditLogPort auditLogPort) {
+        return new LoginUserService(
+                userRepository,
+                passwordEncoder,
+                tokenProvider,
+                auditLogPort
         );
     }
 }
