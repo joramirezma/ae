@@ -1,9 +1,13 @@
 package com.riwi.assesment.infrastructure.security;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -17,7 +21,7 @@ import java.util.UUID;
 
 /**
  * JWT Authentication Filter.
- * Intercepts requests and validates JWT tokens.
+ * Intercepts requests and validates JWT tokens with detailed error handling.
  */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -35,20 +39,37 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             String jwt = getJwtFromRequest(request);
 
-            if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
-                UUID userId = jwtTokenProvider.getUserIdFromToken(jwt);
-                String username = jwtTokenProvider.getUsernameFromToken(jwt);
+            if (StringUtils.hasText(jwt)) {
+                if (jwtTokenProvider.validateToken(jwt)) {
+                    UUID userId = jwtTokenProvider.getUserIdFromToken(jwt);
+                    String username = jwtTokenProvider.getUsernameFromToken(jwt);
 
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(
-                                userId.toString(),
-                                null,
-                                Collections.emptyList()
-                        );
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(
+                                    userId.toString(),
+                                    null,
+                                    Collections.emptyList()
+                            );
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
             }
+        } catch (ExpiredJwtException ex) {
+            logger.warn("JWT token has expired: " + ex.getMessage());
+            sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, 
+                    "Token expired", "Your session has expired. Please login again.");
+            return;
+        } catch (MalformedJwtException ex) {
+            logger.warn("Invalid JWT token format: " + ex.getMessage());
+            sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, 
+                    "Invalid token", "The provided token is malformed.");
+            return;
+        } catch (SignatureException ex) {
+            logger.warn("Invalid JWT signature: " + ex.getMessage());
+            sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, 
+                    "Invalid signature", "Token signature validation failed.");
+            return;
         } catch (Exception ex) {
             logger.error("Could not set user authentication in security context", ex);
         }
@@ -62,5 +83,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return bearerToken.substring(7);
         }
         return null;
+    }
+
+    private void sendErrorResponse(HttpServletResponse response, int status, 
+                                   String error, String message) throws IOException {
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setStatus(status);
+        response.getWriter().write(String.format(
+                "{\"status\": %d, \"error\": \"%s\", \"message\": \"%s\"}",
+                status, error, message
+        ));
     }
 }
