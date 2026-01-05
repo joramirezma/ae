@@ -48,10 +48,24 @@ npm run dev
 
 ### Running Tests
 
+The project includes **unit tests only** (no integration tests), so you can run them **without Docker or any containers running**:
+
 ```bash
 cd backend
 ./mvnw test
 ```
+
+**Test output:**
+```
+Tests run: 14, Failures: 0, Errors: 0, Skipped: 0
+BUILD SUCCESS
+```
+
+**Test classes:**
+- `ActivateProjectServiceTest` (6 tests) - Tests for activating projects
+- `CompleteTaskServiceTest` (8 tests) - Tests for completing tasks
+
+All tests use **JUnit 5 + Mockito** with mocked dependencies, no Spring context is loaded.
 
 ---
 
@@ -276,10 +290,4 @@ docker-compose down -v
 # Rebuild images
 docker-compose up -d --build
 ```
-
----
-
-## 📄 License
-
-This project was developed as part of the Riwi employability assessment.
 
