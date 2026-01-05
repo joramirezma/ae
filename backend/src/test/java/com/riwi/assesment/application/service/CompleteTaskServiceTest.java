@@ -1,5 +1,26 @@
 package com.riwi.assesment.application.service;
 
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.eq;
+import org.mockito.Mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 import com.riwi.assesment.domain.exception.ProjectNotFoundException;
 import com.riwi.assesment.domain.exception.TaskCannotBeCompletedException;
 import com.riwi.assesment.domain.exception.TaskNotFoundException;
@@ -8,21 +29,11 @@ import com.riwi.assesment.domain.model.Project;
 import com.riwi.assesment.domain.model.ProjectStatus;
 import com.riwi.assesment.domain.model.Task;
 import com.riwi.assesment.domain.port.in.CompleteTaskUseCase;
-import com.riwi.assesment.domain.port.out.*;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.Optional;
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import com.riwi.assesment.domain.port.out.AuditLogPort;
+import com.riwi.assesment.domain.port.out.CurrentUserPort;
+import com.riwi.assesment.domain.port.out.NotificationPort;
+import com.riwi.assesment.domain.port.out.ProjectRepositoryPort;
+import com.riwi.assesment.domain.port.out.TaskRepositoryPort;
 
 /**
  * Unit tests for CompleteTaskService.

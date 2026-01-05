@@ -20,4 +20,6 @@ public interface JpaTaskRepository extends JpaRepository<TaskEntity, UUID> {
     long countByProjectIdAndDeletedFalse(UUID projectId);
 
     boolean existsByProjectIdAndDeletedFalse(UUID projectId);
+
+    boolean existsByProjectIdAndCompletedFalseAndDeletedFalse(UUID projectId);
 }

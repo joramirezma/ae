@@ -63,11 +63,11 @@ public class ActivateProjectService implements ActivateProjectUseCase {
                     "Project is not in DRAFT status. Current status: " + project.getStatus());
         }
 
-        // Check if project has at least one task
-        boolean hasTasks = taskRepository.existsByProjectIdAndDeletedFalse(projectId);
-        if (!hasTasks) {
+        // Check if project has at least one active (not completed) task
+        boolean hasActiveTasks = taskRepository.existsByProjectIdAndCompletedFalseAndDeletedFalse(projectId);
+        if (!hasActiveTasks) {
             throw new ProjectCannotBeActivatedException(
-                    "Project must have at least one task to be activated");
+                    "Project must have at least one active (not completed) task to be activated");
         }
 
         // Activate the project

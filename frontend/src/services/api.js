@@ -152,9 +152,9 @@ export const tasksApi = {
    * Create a new task
    */
   create: async (title, description, projectId) => {
-    return fetchApi('/tasks', {
+    return fetchApi(`/projects/${projectId}/tasks`, {
       method: 'POST',
-      body: JSON.stringify({ title, description, projectId }),
+      body: JSON.stringify({ title, description }),
     });
   },
 

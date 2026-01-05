@@ -64,6 +64,11 @@ public class TaskPersistenceAdapter implements TaskRepositoryPort {
     }
 
     @Override
+    public boolean existsByProjectIdAndCompletedFalseAndDeletedFalse(UUID projectId) {
+        return jpaTaskRepository.existsByProjectIdAndCompletedFalseAndDeletedFalse(projectId);
+    }
+
+    @Override
     public boolean existsById(UUID id) {
         return jpaTaskRepository.existsById(id);
     }

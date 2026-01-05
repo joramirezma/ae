@@ -1,26 +1,37 @@
 package com.riwi.assesment.application.service;
 
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.eq;
+import org.mockito.Mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 import com.riwi.assesment.domain.exception.ProjectCannotBeActivatedException;
 import com.riwi.assesment.domain.exception.ProjectNotFoundException;
 import com.riwi.assesment.domain.exception.UnauthorizedAccessException;
 import com.riwi.assesment.domain.model.Project;
 import com.riwi.assesment.domain.model.ProjectStatus;
 import com.riwi.assesment.domain.port.in.ActivateProjectUseCase;
-import com.riwi.assesment.domain.port.out.*;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.Optional;
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import com.riwi.assesment.domain.port.out.AuditLogPort;
+import com.riwi.assesment.domain.port.out.CurrentUserPort;
+import com.riwi.assesment.domain.port.out.NotificationPort;
+import com.riwi.assesment.domain.port.out.ProjectRepositoryPort;
+import com.riwi.assesment.domain.port.out.TaskRepositoryPort;
 
 /**
  * Unit tests for ActivateProjectService.
@@ -78,7 +89,7 @@ class ActivateProjectServiceTest {
         // Arrange
         when(currentUserPort.getCurrentUserId()).thenReturn(ownerId);
         when(projectRepository.findById(projectId)).thenReturn(Optional.of(draftProject));
-        when(taskRepository.existsByProjectIdAndDeletedFalse(projectId)).thenReturn(true);
+        when(taskRepository.existsByProjectIdAndCompletedFalseAndDeletedFalse(projectId)).thenReturn(true);
         when(projectRepository.save(any(Project.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         ActivateProjectUseCase.ActivateProjectCommand command =
@@ -94,7 +105,7 @@ class ActivateProjectServiceTest {
 
         // Verify interactions
         verify(projectRepository).findById(projectId);
-        verify(taskRepository).existsByProjectIdAndDeletedFalse(projectId);
+        verify(taskRepository).existsByProjectIdAndCompletedFalseAndDeletedFalse(projectId);
         verify(projectRepository).save(any(Project.class));
         verify(auditLogPort).register(eq("ACTIVATE_PROJECT"), eq(projectId));
         verify(notificationPort).notify(contains("activated"));
@@ -106,7 +117,7 @@ class ActivateProjectServiceTest {
         // Arrange
         when(currentUserPort.getCurrentUserId()).thenReturn(ownerId);
         when(projectRepository.findById(projectId)).thenReturn(Optional.of(draftProject));
-        when(taskRepository.existsByProjectIdAndDeletedFalse(projectId)).thenReturn(false);
+        when(taskRepository.existsByProjectIdAndCompletedFalseAndDeletedFalse(projectId)).thenReturn(false);
 
         ActivateProjectUseCase.ActivateProjectCommand command =
                 new ActivateProjectUseCase.ActivateProjectCommand(projectId);
@@ -117,7 +128,7 @@ class ActivateProjectServiceTest {
                 () -> activateProjectService.execute(command)
         );
 
-        assertTrue(exception.getMessage().contains("at least one task"));
+        assertTrue(exception.getMessage().contains("at least one active"));
 
         // Verify that save was never called
         verify(projectRepository, never()).save(any(Project.class));

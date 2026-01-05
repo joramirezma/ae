@@ -55,6 +55,13 @@ public interface TaskRepositoryPort {
     boolean existsByProjectIdAndDeletedFalse(UUID projectId);
 
     /**
+     * Checks if a project has any active (not completed and not deleted) tasks.
+     * @param projectId the project ID
+     * @return true if the project has at least one active task, false otherwise
+     */
+    boolean existsByProjectIdAndCompletedFalseAndDeletedFalse(UUID projectId);
+
+    /**
      * Checks if a task exists by ID.
      * @param id the task ID
      * @return true if the task exists, false otherwise
