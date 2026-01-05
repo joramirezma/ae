@@ -1,14 +1,15 @@
 package com.riwi.assesment.infrastructure.adapter.out.persistence;
 
+import java.util.Optional;
+import java.util.UUID;
+
+import org.springframework.stereotype.Component;
+
 import com.riwi.assesment.domain.model.User;
 import com.riwi.assesment.domain.port.out.UserRepositoryPort;
 import com.riwi.assesment.infrastructure.adapter.out.persistence.entity.UserEntity;
 import com.riwi.assesment.infrastructure.adapter.out.persistence.mapper.UserMapper;
 import com.riwi.assesment.infrastructure.adapter.out.persistence.repository.JpaUserRepository;
-import org.springframework.stereotype.Component;
-
-import java.util.Optional;
-import java.util.UUID;
 
 /**
  * Persistence adapter implementing UserRepositoryPort.

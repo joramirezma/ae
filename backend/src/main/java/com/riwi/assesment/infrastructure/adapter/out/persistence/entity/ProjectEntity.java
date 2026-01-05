@@ -1,14 +1,18 @@
 package com.riwi.assesment.infrastructure.adapter.out.persistence.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.SQLRestriction;
+
 import java.util.UUID;
 
 /**
  * JPA Entity for Project.
  * This is an infrastructure concern and should not leak into the domain.
+ * Uses SQLRestriction for automatic soft delete filtering.
  */
 @Entity
 @Table(name = "projects")
+@SQLRestriction("deleted = false")
 public class ProjectEntity {
 
     @Id

@@ -1,13 +1,13 @@
 package com.riwi.assesment.application.service;
 
+import java.util.Optional;
+
 import com.riwi.assesment.domain.model.User;
 import com.riwi.assesment.domain.port.in.LoginUserUseCase;
 import com.riwi.assesment.domain.port.out.AuditLogPort;
 import com.riwi.assesment.domain.port.out.PasswordEncoderPort;
 import com.riwi.assesment.domain.port.out.TokenProviderPort;
 import com.riwi.assesment.domain.port.out.UserRepositoryPort;
-
-import java.util.Optional;
 
 /**
  * Service that implements the LoginUserUseCase.

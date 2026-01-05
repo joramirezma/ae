@@ -1,7 +1,5 @@
 package com.riwi.assesment.domain.port.out;
 
-import java.util.UUID;
-
 /**
  * Output port for password encoding operations.
  * Abstracts the password encoding mechanism from the domain.

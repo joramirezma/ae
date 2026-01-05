@@ -2,6 +2,8 @@ package com.riwi.assesment.infrastructure.adapter.out.persistence.entity;
 
 import java.util.UUID;
 
+import org.hibernate.annotations.SQLRestriction;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,9 +14,11 @@ import jakarta.persistence.Table;
 /**
  * JPA Entity for Task.
  * This is an infrastructure concern and should not leak into the domain.
+ * Uses SQLRestriction for automatic soft delete filtering.
  */
 @Entity
 @Table(name = "tasks")
+@SQLRestriction("deleted = false")
 public class TaskEntity {
 
     @Id

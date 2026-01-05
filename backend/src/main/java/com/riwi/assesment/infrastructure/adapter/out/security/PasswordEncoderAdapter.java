@@ -1,8 +1,9 @@
 package com.riwi.assesment.infrastructure.adapter.out.security;
 
-import com.riwi.assesment.domain.port.out.PasswordEncoderPort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import com.riwi.assesment.domain.port.out.PasswordEncoderPort;
 
 /**
  * Security adapter implementing PasswordEncoderPort.

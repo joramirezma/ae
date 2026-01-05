@@ -1,9 +1,9 @@
 package com.riwi.assesment.domain.port.out;
 
-import com.riwi.assesment.domain.model.User;
-
 import java.util.Optional;
 import java.util.UUID;
+
+import com.riwi.assesment.domain.model.User;
 
 /**
  * Output port for User persistence operations.
