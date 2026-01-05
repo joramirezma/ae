@@ -18,10 +18,10 @@ git clone https://github.com/joramirezma/ae.git
 cd ae
 
 # Start all services
-docker-compose up -d
+docker compose up -d
 
 # Verify services are running
-docker-compose ps
+docker compose ps
 ```
 
 **Available services:**
@@ -36,7 +36,7 @@ docker-compose ps
 
 ```bash
 # 1. Start database
-docker-compose up -d db
+docker compose up -d db
 
 # 2. Backend (in another terminal)
 cd backend
@@ -235,7 +235,7 @@ assesment/
 │   ├── src/
 │   ├── package.json
 │   └── Dockerfile
-├── docker-compose.yml         # Service orchestration
+├── docker compose.yml         # Service orchestration
 └── README.md
 ```
 
@@ -275,21 +275,21 @@ assesment/
 
 ```bash
 # View logs for all services
-docker-compose logs -f
+docker compose logs -f
 
 # View logs for a specific service
-docker-compose logs -f backend
+docker compose logs -f backend
 
 # Restart services
-docker-compose restart
+docker compose restart
 
 # Stop services
-docker-compose down
+docker compose down
 
 # Stop and remove volumes (reset DB)
-docker-compose down -v
+docker compose down -v
 
 # Rebuild images
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
